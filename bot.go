@@ -13,7 +13,7 @@ import (
 var userProducts = make(map[int64][]string)
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI("ТВІЙ_ТОКЕН")
+	bot, err := tgbotapi.NewBotAPI(".env")
 	if err != nil {
 		log.Fatal(err)
 	}
