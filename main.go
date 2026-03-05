@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
@@ -35,13 +33,4 @@ func fetchPrice(url string) (string, error) {
 	}
 
 	return price, nil
-}
-
-func main() {
-	url := "https://rozetka.com.ua/ua/universalnye-mobilnye-batarei-qinetiq-152025260/p549129762/"
-	price, err := fetchPrice(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Цена:", price)
 }
