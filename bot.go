@@ -10,11 +10,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var userProducts = make(map[int64][]string)
-
 func main() {
 	godotenv.Load()
 	token := os.Getenv("BOT_TOKEN")
+
+	initDB()
 
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
@@ -41,7 +41,7 @@ func main() {
 		}
 
 		if msg == "/list" {
-			products := userProducts[chatID]
+			products := getProducts(chatID)
 			if len(products) == 0 {
 				bot.Send(tgbotapi.NewMessage(chatID, "Список порожній"))
 				continue
@@ -57,7 +57,7 @@ func main() {
 				continue
 			}
 
-			userProducts[chatID] = append(userProducts[chatID], msg)
+			saveProduct(chatID, msg)
 			bot.Send(tgbotapi.NewMessage(chatID, fmt.Sprintf("Збережено! Ціна: %s", price)))
 			continue
 		}
