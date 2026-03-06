@@ -32,11 +32,11 @@ func fetchPrice(url string) (string, error) {
 	case strings.Contains(url, "rozetka.com.ua"):
 		selector = ".product-price__big"
 	case strings.Contains(url, "epicentrk.ua"):
-		selector = ".product-price"
+		selector = "[data-product-price-main]"
 	case strings.Contains(url, "foxtrot.com.ua"):
 		selector = ".cost"
 	case strings.Contains(url, "prom.ua"):
-		selector = ".x-money-amount"
+		selector = "[data-qaid=\"product_price\"]"
 	default:
 		return "магазин не підтримується", nil
 	}
