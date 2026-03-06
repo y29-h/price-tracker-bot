@@ -132,15 +132,15 @@ func sendDeleteMenu(chatID int64) {
 
 	var rows [][]tgbotapi.InlineKeyboardButton
 	for i, p := range products {
-		// Беремо коротку назву з URL
-		parts := strings.Split(p.URL, "/")
-		name := parts[len(parts)-2]
-		if len(name) > 30 {
-			name = name[:30] + "..."
+		parts := strings.Split(strings.TrimSuffix(p.URL, "/"), "/")
+		name := parts[len(parts)-1]
+		if len(name) > 25 {
+			name = name[:25] + "..."
 		}
+		// Передаємо ID товару замість URL — бо Telegram ліміт 64 байти
 		btn := tgbotapi.NewInlineKeyboardButtonData(
 			fmt.Sprintf("🗑 %d. %s", i+1, name),
-			fmt.Sprintf("delete:%s", p.URL),
+			fmt.Sprintf("del:%d", p.ID),
 		)
 		rows = append(rows, tgbotapi.NewInlineKeyboardRow(btn))
 	}
@@ -170,14 +170,16 @@ func main() {
 	updates := botInstance.GetUpdatesChan(u)
 
 	for update := range updates {
-		// Обробка натискання інлайн кнопок
 		if update.CallbackQuery != nil {
 			callback := update.CallbackQuery
 			chatID := callback.Message.Chat.ID
 
-			if strings.HasPrefix(callback.Data, "delete:") {
-				url := strings.TrimPrefix(callback.Data, "delete:")
-				deleteProduct(chatID, url)
+			if strings.HasPrefix(callback.Data, "del:") {
+				idStr := strings.TrimPrefix(callback.Data, "del:")
+				id, err := strconv.ParseInt(idStr, 10, 64)
+				if err == nil {
+					deleteProductByID(id)
+				}
 
 				botInstance.Request(tgbotapi.NewCallback(callback.ID, "✅ Видалено!"))
 				botInstance.Request(tgbotapi.NewDeleteMessage(chatID, callback.Message.MessageID))
@@ -249,7 +251,6 @@ func main() {
 			continue
 		}
 
-		// Якщо невідоме повідомлення
 		m := tgbotapi.NewMessage(chatID, "🔗 Надішли посилання з rozetka.com.ua")
 		m.ReplyMarkup = mainMenu()
 		botInstance.Send(m)
