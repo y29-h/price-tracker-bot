@@ -84,7 +84,7 @@ func mainMenu() tgbotapi.ReplyKeyboardMarkup {
 func sendWelcome(chatID int64, name string) {
 	text := fmt.Sprintf(
 		"👋 Привіт, %s!\n\n"+
-			"🛍 Я відстежую ціни на Rozetka та сповіщаю тебе про знижки.\n\n"+
+			"🛍 Я відстежую ціни на Rozetka, Епіцентр, Фокстрот та Prom.\n\n"+
 			"📌 Просто кинь посилання на товар — я збережу його і слідкуватиму за ціною.\n\n"+
 			"⚡️ Перевірка цін кожну годину автоматично.",
 		name,
@@ -97,7 +97,7 @@ func sendWelcome(chatID int64, name string) {
 func sendList(chatID int64) {
 	products := getProducts(chatID)
 	if len(products) == 0 {
-		msg := tgbotapi.NewMessage(chatID, "📭 Список порожній\n\nКинь посилання на товар з Rozetka щоб додати його!")
+		msg := tgbotapi.NewMessage(chatID, "📭 Список порожній\n\nКинь посилання на товар щоб додати його!")
 		msg.ReplyMarkup = mainMenu()
 		botInstance.Send(msg)
 		return
@@ -227,7 +227,7 @@ func main() {
 			continue
 		}
 
-		if strings.HasPrefix(msg, "https://rozetka.com.ua") {
+		if isSupported(msg) {
 			m := tgbotapi.NewMessage(chatID, "⏳ Отримую ціну...")
 			botInstance.Send(m)
 
@@ -251,8 +251,22 @@ func main() {
 			continue
 		}
 
-		m := tgbotapi.NewMessage(chatID, "🔗 Надішли посилання з rozetka.com.ua")
+		m := tgbotapi.NewMessage(chatID, "🔗 Підтримувані магазини:\n• rozetka.com.ua\n• epicentrk.ua\n• foxtrot.com.ua\n• prom.ua")
 		m.ReplyMarkup = mainMenu()
 		botInstance.Send(m)
 	}
+}
+func isSupported(url string) bool {
+	supported := []string{
+		"rozetka.com.ua",
+		"epicentrk.ua",
+		"foxtrot.com.ua",
+		"prom.ua",
+	}
+	for _, s := range supported {
+		if strings.Contains(url, s) {
+			return true
+		}
+	}
+	return false
 }
