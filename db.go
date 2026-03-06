@@ -77,3 +77,6 @@ func getChatIDByURL(url string) int64 {
 	db.QueryRow("SELECT chat_id FROM products WHERE url = ?", url).Scan(&chatID)
 	return chatID
 }
+func deleteProduct(chatID int64, url string) {
+	db.Exec("DELETE FROM products WHERE chat_id = ? AND url = ?", chatID, url)
+}
