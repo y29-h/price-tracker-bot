@@ -3,17 +3,20 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/joho/godotenv"
 )
 
-// Зберігаємо товари кожного користувача
-// map[chatID] = список посилань
 var userProducts = make(map[int64][]string)
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI(".env")
+	godotenv.Load()
+	token := os.Getenv("BOT_TOKEN")
+
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +40,6 @@ func main() {
 			continue
 		}
 
-		// Команда /list — показати всі збережені товари
 		if msg == "/list" {
 			products := userProducts[chatID]
 			if len(products) == 0 {
@@ -48,7 +50,6 @@ func main() {
 			continue
 		}
 
-		// Якщо посилання — парсимо і зберігаємо
 		if strings.HasPrefix(msg, "https://rozetka.com.ua") {
 			price, err := fetchPrice(msg)
 			if err != nil {
@@ -56,9 +57,7 @@ func main() {
 				continue
 			}
 
-			// Додаємо в список цього користувача
 			userProducts[chatID] = append(userProducts[chatID], msg)
-
 			bot.Send(tgbotapi.NewMessage(chatID, fmt.Sprintf("Збережено! Ціна: %s", price)))
 			continue
 		}
