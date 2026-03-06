@@ -5,9 +5,6 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-
-	"context"
-	"github.com/chromedp/chromedp"
 )
 
 func fetchPrice(url string) (string, error) {
@@ -36,8 +33,8 @@ func fetchPrice(url string) (string, error) {
 		selector = ".product-price__big"
 	case strings.Contains(url, "epicentrk.ua"):
 		selector = "[data-product-price-main]"
-	case strings.Contains(url, "foxtrot.com.ua"):
-		return fetchPriceJS(url)
+	case strings.Contains(url, "comfy.ua"):
+		selector = ".price__current"
 	case strings.Contains(url, "prom.ua"):
 		selector = "[data-qaid=\"product_price\"]"
 	default:
@@ -51,20 +48,4 @@ func fetchPrice(url string) (string, error) {
 		return "ціна не знайдена", nil
 	}
 	return price, nil
-}
-
-func fetchPriceJS(url string) (string, error) {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
-
-	var price string
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(url),
-		chromedp.WaitVisible(`.price--current`, chromedp.ByQuery),
-		chromedp.Text(`.price--current`, &price, chromedp.ByQuery),
-	)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(price), nil
 }

@@ -251,7 +251,7 @@ func main() {
 			continue
 		}
 
-		m := tgbotapi.NewMessage(chatID, "🔗 Підтримувані магазини:\n• rozetka.com.ua\n• epicentrk.ua\n• foxtrot.com.ua\n• prom.ua")
+		m := tgbotapi.NewMessage(chatID, "🔗 Підтримувані магазини:\n• rozetka.com.ua\n• epicentrk.ua\n• comfy.ua\n• prom.ua")
 		m.ReplyMarkup = mainMenu()
 		botInstance.Send(m)
 	}
@@ -260,7 +260,7 @@ func isSupported(url string) bool {
 	supported := []string{
 		"rozetka.com.ua",
 		"epicentrk.ua",
-		"foxtrot.com.ua",
+		"comfy.ua",
 		"prom.ua",
 	}
 	for _, s := range supported {
